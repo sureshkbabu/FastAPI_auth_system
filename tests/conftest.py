@@ -1,14 +1,18 @@
 import pytest
 from httpx import AsyncClient, ASGITransport
 from app.main import app
-import pytest
+import asyncio
 from app.core.database import engine
 
 
 @pytest.fixture(scope="session", autouse=True)
-async def cleanup_db_engine():
+def cleanup_db_engine():
     yield
-    await engine.dispose()
+    # Properly close async engine at end of test session
+    loop = asyncio.new_event_loop()
+    loop.run_until_complete(engine.dispose())
+    loop.close()
+
 
 @pytest.fixture
 async def client():
