@@ -4,6 +4,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase
 from app.core.config import settings
+import os
+from sqlalchemy.pool import NullPool
 
 DATABASE_URL = (
     f"mysql+asyncmy://{settings.DB_USER}:"
@@ -12,11 +14,15 @@ DATABASE_URL = (
     f"{settings.DB_NAME}"
 )
 
+IS_TESTING = os.getenv("PYTEST_RUNNING") == "1"
+
 engine = create_async_engine(
     DATABASE_URL,
     echo=False,
     pool_pre_ping=True,
+    poolclass=NullPool if IS_TESTING else None,
 )
+
 
 AsyncSessionLocal = async_sessionmaker(
     engine,

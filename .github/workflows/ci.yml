@@ -55,5 +55,6 @@ jobs:
           DB_USER: auth_user
           DB_PASSWORD: strongpassword
           DB_NAME: auth_db
+          PYTEST_RUNNING: "1"
         run: |
           pytest -v
